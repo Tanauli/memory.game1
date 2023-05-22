@@ -1,0 +1,51 @@
+import random
+
+def create_board(size):
+    """Create a square game board with size * size cards."""
+    cards = list(range(size)) * 2  # Create pairs of cards
+    random.shuffle(cards)  # Shuffle the cards randomly
+    board = [cards[i:i+size] for i in range(0, size*size, size)]
+    return board
+
+def display_board(board):
+    """Display the current state of the game board."""
+    for row in board:
+        print(" ".join(str(card) if card is not None else "#" for card in row))
+    print()
+
+def play_game(size):
+    """Play a game of memory with a given board size."""
+    board = create_board(size)
+    hidden_board = [[None] * size for _ in range(size)]
+    num_matches = 0
+    attempts = 0
+
+    while num_matches < size:
+        display_board(hidden_board)
+        print("Enter the coordinates of two cards (e.g., A1 B2):")
+        card1, card2 = input().split()
+
+        # Convert the coordinates to row and column indices
+        row1, col1 = ord(card1[0].upper()) - ord('A'), int(card1[1]) - 1
+        row2, col2 = ord(card2[0].upper()) - ord('A'), int(card2[1]) - 1
+
+        if hidden_board[row1][col1] is not None or hidden_board[row2][col2] is not None:
+            print("One or both of these cards are already flipped. Try again.\n")
+            continue
+
+        if board[row1][col1] == board[row2][col2]:
+            hidden_board[row1][col1] = board[row1][col1]
+            hidden_board[row2][col2] = board[row2][col2]
+            num_matches += 1
+            print("You found a match!\n")
+        else:
+            print("No match. Try again.\n")
+
+        attempts += 1
+
+    print("Congratulations! You completed the game in", attempts, "attempts.")
+
+# Start the game
+print("Welcome to the Memory Game!")
+size = int(input("Enter the size of the game board (2, 4, 6, ...): "))
+play_game(size)
